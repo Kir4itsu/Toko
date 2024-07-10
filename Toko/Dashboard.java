@@ -33,7 +33,7 @@ public class Dashboard extends JFrame {
                 panel = new SellerPanel();
                 break;
             default:
-                panel = new CustomerPanel();
+                panel = new CustomerPanel(user);  // passing user to CustomerPanel
                 break;
         }
 
@@ -241,38 +241,10 @@ public class Dashboard extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a product to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
             }
         }
-        
 
         private void refreshProductTable() {
             List<Product> products = DatabaseHelper.getProducts();
             productTable.setModel(new ProductTableModel(products));
-        }
-    }
-
-    private class CustomerPanel extends JPanel {
-        private JTable productTable;
-        private JButton addToCartButton;
-        private JButton checkoutButton;
-
-        public CustomerPanel() {
-            setLayout(new BorderLayout());
-            initializeComponents();
-        }
-
-        private void initializeComponents() {
-            List<Product> products = DatabaseHelper.getProducts();
-            productTable = new JTable(new ProductTableModel(products));
-            add(new JScrollPane(productTable), BorderLayout.CENTER);
-
-            JPanel buttonPanel = new JPanel();
-            addToCartButton = new JButton("Add to Cart");
-            checkoutButton = new JButton("Checkout");
-
-            buttonPanel.add(addToCartButton);
-            buttonPanel.add(checkoutButton);
-
-            add(buttonPanel, BorderLayout.SOUTH);
-            
         }
     }
 }

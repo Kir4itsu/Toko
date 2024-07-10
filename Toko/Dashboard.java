@@ -20,31 +20,36 @@ public class Dashboard extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
+    
         desktopPane = new JDesktopPane();
         setContentPane(desktopPane);
-
+    
         JPanel panel;
+        String dashboardTitle;
         switch (user.getRole()) {
             case "admin":
                 panel = new AdminPanel();
+                dashboardTitle = "Dashboard Admin";
                 break;
             case "seller":
                 panel = new SellerPanel();
+                dashboardTitle = "Dashboard Seller";
                 break;
             default:
                 panel = new CustomerPanel(user);  // passing user to CustomerPanel
+                dashboardTitle = "Dashboard Customer";
                 break;
         }
-
-        JInternalFrame internalFrame = new JInternalFrame("Dashboard", true, false, true, true);
+    
+        JInternalFrame internalFrame = new JInternalFrame(dashboardTitle, true, false, true, true);
         internalFrame.setContentPane(panel);
         internalFrame.pack();
         internalFrame.setVisible(true);
         desktopPane.add(internalFrame);
-
+    
         setupMenuBar();
     }
+    
 
     private void setupMenuBar() {
         JMenuBar menuBar = new JMenuBar();

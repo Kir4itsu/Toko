@@ -71,7 +71,26 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
-
+    
+    public static List<User> getUsers() {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM Users";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                users.add(new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("role")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
     public static List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM Orders";
@@ -165,6 +184,29 @@ public class DatabaseHelper {
         }
     }
 
+    public static User createCustomerAccount(String username, String password) {
+        String query = "INSERT INTO Users (username, password, role) VALUES (?, ?, 'customer')";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            int affectedRows = pstmt.executeUpdate();
+    
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int id = generatedKeys.getInt(1);
+                        return new User(id, username, password, "customer");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static User getUser(String username, String password) {
     String query = "SELECT * FROM Users WHERE username = ? AND password = ?";
     try (Connection conn = getConnection();
@@ -181,6 +223,9 @@ public class DatabaseHelper {
                     rs.getString("password"),
                     rs.getString("role")
                 );
+            } else {
+                // Jika pengguna tidak ditemukan, buat akun customer baru
+                return createCustomerAccount(username, password);
             }
         }
     } catch (SQLException e) {

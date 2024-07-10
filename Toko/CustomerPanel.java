@@ -11,6 +11,7 @@ import java.util.Map;
 public class CustomerPanel extends JPanel {
     private JTable productTable;
     private JButton addToCartButton;
+    private JButton viewCartButton; // Tombol baru untuk melihat cart
     private JButton checkoutButton;
     private Map<Product, Integer> cart;
     private User user;
@@ -29,9 +30,11 @@ public class CustomerPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel();
         addToCartButton = new JButton("Add to Cart");
+        viewCartButton = new JButton("View Cart"); // Inisialisasi tombol View Cart
         checkoutButton = new JButton("Checkout");
 
         buttonPanel.add(addToCartButton);
+        buttonPanel.add(viewCartButton); // Tambahkan tombol View Cart ke panel
         buttonPanel.add(checkoutButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
@@ -40,6 +43,13 @@ public class CustomerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addToCart();
+            }
+        });
+
+        viewCartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewCart();
             }
         });
 
@@ -78,6 +88,36 @@ public class CustomerPanel extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Please select a product to add to cart.", "No Selection", JOptionPane.WARNING_MESSAGE);
         }
+    }
+
+    private void viewCart() {
+        if (cart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Your cart is empty.", "Empty Cart", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        StringBuilder cartContent = new StringBuilder();
+        cartContent.append("Your Cart:\n\n");
+        double total = 0;
+
+        for (Map.Entry<Product, Integer> entry : cart.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+            double subtotal = product.getPrice() * quantity;
+            total += subtotal;
+
+            cartContent.append(String.format("%s - Quantity: %d - Subtotal: $%.2f\n", 
+                               product.getName(), quantity, subtotal));
+        }
+
+        cartContent.append(String.format("\nTotal: $%.2f", total));
+
+        JTextArea textArea = new JTextArea(cartContent.toString());
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(300, 200));
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Cart Contents", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void checkout() {

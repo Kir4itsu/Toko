@@ -3,6 +3,7 @@ package Toko;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class Dashboard extends JFrame {
                 dashboardTitle = "Dashboard Seller";
                 break;
             default:
-                panel = new CustomerPanel(user);  // passing user to CustomerPanel
+                panel = new CustomerPanel(user);
                 dashboardTitle = "Dashboard Customer";
                 break;
         }
@@ -50,7 +51,6 @@ public class Dashboard extends JFrame {
         setupMenuBar();
     }
     
-
     private void setupMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Options");
@@ -79,6 +79,7 @@ public class Dashboard extends JFrame {
         private JButton editButton;
         private JButton deleteButton;
         private JButton ordersButton;
+        private JButton usersButton;
 
         public AdminPanel() {
             setLayout(new BorderLayout());
@@ -95,11 +96,13 @@ public class Dashboard extends JFrame {
             editButton = new JButton("Edit");
             deleteButton = new JButton("Delete");
             ordersButton = new JButton("View Orders");
+            usersButton = new JButton("View Users");
 
             buttonPanel.add(addButton);
             buttonPanel.add(editButton);
             buttonPanel.add(deleteButton);
             buttonPanel.add(ordersButton);
+            buttonPanel.add(usersButton);
 
             add(buttonPanel, BorderLayout.SOUTH);
 
@@ -107,6 +110,7 @@ public class Dashboard extends JFrame {
             editButton.addActionListener(e -> openEditProductForm());
             deleteButton.addActionListener(e -> deleteProduct());
             ordersButton.addActionListener(e -> openOrdersPanel());
+            usersButton.addActionListener(e -> openUsersPanel());
         }
 
         private void openAddProductForm() {
@@ -154,7 +158,6 @@ public class Dashboard extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a product to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
             }
         }
-        
 
         private void refreshProductTable() {
             List<Product> products = DatabaseHelper.getProducts();
@@ -166,6 +169,13 @@ public class Dashboard extends JFrame {
             OrdersPanel ordersPanel = new OrdersPanel();
             desktopPane.add(ordersPanel);
             ordersPanel.setVisible(true);
+        }
+
+        private void openUsersPanel() {
+            closeFrameIfExists(UserPanel.class);
+            UserPanel userPanel = new UserPanel();
+            desktopPane.add(userPanel);
+            userPanel.setVisible(true);
         }
     }
 
@@ -250,6 +260,59 @@ public class Dashboard extends JFrame {
         private void refreshProductTable() {
             List<Product> products = DatabaseHelper.getProducts();
             productTable.setModel(new ProductTableModel(products));
+        }
+    }
+
+    private class UserPanel extends JInternalFrame {
+        private JTable userTable;
+
+        public UserPanel() {
+            super("User List", true, true, true, true);
+            setSize(600, 400);
+            initializeComponents();
+        }
+
+        private void initializeComponents() {
+            setLayout(new BorderLayout());
+
+            List<User> users = DatabaseHelper.getUsers();
+            userTable = new JTable(new UserTableModel(users));
+            add(new JScrollPane(userTable), BorderLayout.CENTER);
+        }
+    }
+
+    private class UserTableModel extends AbstractTableModel {
+        private List<User> users;
+        private String[] columnNames = {"ID", "Username", "Role"};
+
+        public UserTableModel(List<User> users) {
+            this.users = users;
+        }
+
+        @Override
+        public int getRowCount() {
+            return users.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            User user = users.get(rowIndex);
+            switch (columnIndex) {
+                case 0: return user.getId();
+                case 1: return user.getUsername();
+                case 2: return user.getRole();
+                default: return null;
+            }
         }
     }
 }

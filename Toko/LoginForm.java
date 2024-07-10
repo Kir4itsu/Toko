@@ -36,7 +36,7 @@ public class LoginForm extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(new JLabel("Username/Email"), gbc);
+        panel.add(new JLabel("Username"), gbc);
         usernameField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(usernameField, gbc);

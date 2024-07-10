@@ -32,13 +32,14 @@ public class DatabaseHelper {
         return products;
     }
 
-    public static void addProduct(String name, double price, int stock) {
-        String query = "INSERT INTO Products (name, price, stock) VALUES (?, ?, ?)";
+    public static void addProduct(Product product) {
+        String query = "INSERT INTO Products (id, name, price, stock) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, name);
-            pstmt.setDouble(2, price);
-            pstmt.setInt(3, stock);
+            pstmt.setInt(1, product.getId());
+            pstmt.setString(2, product.getName());
+            pstmt.setDouble(3, product.getPrice());
+            pstmt.setInt(4, product.getStock());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

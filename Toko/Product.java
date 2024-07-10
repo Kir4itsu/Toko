@@ -17,6 +17,10 @@ public class Product {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -39,16 +43,6 @@ public class Product {
 
     public void setStock(int stock) {
         this.stock = stock;
-    }
-
-    // Alias method for getStock() to maintain consistency with some parts of your code
-    public int getQuantity() {
-        return getStock();
-    }
-
-    // Alias method for setStock() to maintain consistency
-    public void setQuantity(int quantity) {
-        setStock(quantity);
     }
 
     @Override

@@ -4,8 +4,8 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class OrdersTableModel extends AbstractTableModel {
-    private final List<Order> orders;
     private final String[] columnNames = {"Order ID", "User ID", "Product ID", "Quantity"};
+    private final List<Order> orders;
 
     public OrdersTableModel(List<Order> orders) {
         this.orders = orders;
